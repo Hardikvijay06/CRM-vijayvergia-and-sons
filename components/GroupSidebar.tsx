@@ -1,6 +1,6 @@
 "use client";
 
-import { Users, LayoutGrid, Settings2 } from "lucide-react";
+import { Users, LayoutGrid, Settings2, Plus } from "lucide-react";
 import { Group } from "@/lib/storage";
 
 type Props = {
@@ -32,13 +32,22 @@ export default function GroupSidebar({ groups, selectedGroupId, onSelectGroup, o
 
         <div className="flex items-center justify-between px-2 mb-2">
           <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-widest">Groups</h2>
-          <button
-            onClick={onManageGroups}
-            className="p-1 text-slate-500 hover:text-blue-400 transition-colors"
-            title="Manage Groups"
-          >
-            <Settings2 size={14} />
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={onManageGroups}
+              className="p-1 text-slate-500 hover:text-blue-400 transition-colors"
+              title="Add Group"
+            >
+              <Plus size={14} />
+            </button>
+            <button
+              onClick={onManageGroups}
+              className="p-1 text-slate-500 hover:text-blue-400 transition-colors"
+              title="Manage Groups"
+            >
+              <Settings2 size={14} />
+            </button>
+          </div>
         </div>
 
         <div className="flex flex-col gap-1 max-h-[400px] overflow-y-auto custom-scrollbar">
