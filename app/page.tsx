@@ -2,17 +2,20 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Users, BookUser, TrendingUp, Activity } from "lucide-react";
-import { getContacts } from "@/lib/storage";
+import { Users, BookUser, TrendingUp, Activity, Layers } from "lucide-react";
+import { getContacts, getGroups, Group } from "@/lib/storage";
 
 export default function Dashboard() {
   const [contactsCount, setContactsCount] = useState(0);
   const [leadsCount, setLeadsCount] = useState(0);
+  const [groupsCount, setGroupsCount] = useState(0);
 
   useEffect(() => {
     const contacts = getContacts();
+    const groups = getGroups();
     setContactsCount(contacts.length);
     setLeadsCount(contacts.filter(c => c.status === "Lead").length);
+    setGroupsCount(groups.length);
   }, []);
 
   return (
@@ -56,6 +59,16 @@ export default function Dashboard() {
             <h2 className="text-xl font-semibold mt-0">System Status</h2>
           </div>
           <p className="text-xl font-medium text-emerald-400 mt-0">Healthy (Offline)</p>
+        </div>
+
+        <div className="glass-panel p-6">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-3 bg-violet-500/20 rounded-lg text-violet-400">
+              <Layers size={24} />
+            </div>
+            <h2 className="text-xl font-semibold mt-0">Total Groups</h2>
+          </div>
+          <p className="text-4xl font-bold mt-0">{groupsCount}</p>
         </div>
       </div>
 

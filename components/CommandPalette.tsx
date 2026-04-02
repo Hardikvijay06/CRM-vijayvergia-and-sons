@@ -3,14 +3,15 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Search, UserCircle, Briefcase, Mail, Phone, UserPlus, Download, LayoutDashboard, Users, Kanban } from "lucide-react";
-import { getContacts, Contact } from "@/lib/storage";
+import { Search, UserCircle, Briefcase, Mail, Phone, UserPlus, Download, LayoutDashboard, Users, Kanban, Layers } from "lucide-react";
+import { getContacts, getGroups, Contact, Group } from "@/lib/storage";
 import { exportToCSV } from "@/lib/export";
 
 export default function CommandPalette() {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [contacts, setContacts] = useState<Contact[]>([]);
+  const [groups, setGroups] = useState<Group[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   
   const router = useRouter();
@@ -34,6 +35,7 @@ export default function CommandPalette() {
   useEffect(() => {
     if (isOpen) {
       setContacts(getContacts());
+      setGroups(getGroups());
       setQuery("");
       setSelectedIndex(0);
       setTimeout(() => inputRef.current?.focus(), 100);
@@ -44,6 +46,7 @@ export default function CommandPalette() {
     { id: 'cmd-dashboard', name: 'Go to Dashboard', icon: LayoutDashboard, action: 'goto', path: '/' },
     { id: 'cmd-contacts', name: 'Go to Contacts', icon: Users, action: 'goto', path: '/contacts' },
     { id: 'cmd-pipeline', name: 'Go to Pipeline', icon: Kanban, action: 'goto', path: '/pipeline' },
+    { id: 'cmd-groups', name: 'Manage Groups', icon: Layers, action: 'goto', path: '/contacts' },
     { id: 'cmd-add', name: 'Add New Contact', icon: UserPlus, action: 'add' },
     { id: 'cmd-export', name: 'Export Contacts', icon: Download, action: 'export' },
   ];
@@ -70,7 +73,9 @@ export default function CommandPalette() {
     });
   }
 
-  const allItems = [...filteredCommands, ...filteredContacts];
+  const filteredGroups = cleanSearch ? groups.filter(g => g.name.toLowerCase().includes(cleanSearch)) : [];
+
+  const allItems = [...filteredCommands, ...filteredGroups, ...filteredContacts];
 
   useEffect(() => {
     setSelectedIndex(0);
@@ -176,6 +181,31 @@ export default function CommandPalette() {
                   </div>
                 );
               }
+              
+              if (item.color) { // It's a Group
+                const group = item as Group;
+                return (
+                  <div 
+                    key={group.id}
+                    onClick={() => {
+                        setIsOpen(false);
+                        router.push(`/contacts?group=${group.id}`);
+                    }}
+                    className={`flex flex-col p-3 rounded-lg cursor-pointer transition-colors ${
+                      index === selectedIndex ? "bg-slate-700/50" : "hover:bg-slate-800/50"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center text-white font-medium">
+                        <Layers size={16} className="mr-2" style={{ color: group.color }} />
+                        <HighlightMatch text={group.name} search={cleanSearch} />
+                      </div>
+                      <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Group</span>
+                    </div>
+                  </div>
+                );
+              }
+              
               const contact = item as Contact;
               return (
               <div 

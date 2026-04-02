@@ -36,6 +36,8 @@ export default function ContactsClient() {
       const params = new URLSearchParams(window.location.search);
       const editId = params.get("edit");
       const action = params.get("action");
+      const groupId = params.get("group");
+      
       if (editId) {
         const contactToEdit = contacts.find((c) => c.id === editId);
         if (contactToEdit) {
@@ -46,6 +48,9 @@ export default function ContactsClient() {
       } else if (action === "new") {
         setEditingContact(null);
         setIsFormOpen(true);
+        window.history.replaceState({}, "", "/contacts");
+      } else if (groupId) {
+        setSelectedGroupId(groupId);
         window.history.replaceState({}, "", "/contacts");
       }
     }
