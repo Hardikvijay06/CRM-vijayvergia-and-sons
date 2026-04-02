@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X } from "lucide-react";
-import { addContact, updateContact, Contact } from "@/lib/storage";
+import { addContact, updateContact, getGroups, Contact, Group } from "@/lib/storage";
 
 type Props = {
   contact?: Contact | null;
@@ -17,9 +17,15 @@ export default function ContactForm({ contact, onClose, onSaved }: Props) {
     phone: contact?.phone || "",
     company: contact?.company || "",
     status: contact?.status || "Lead",
+    groupId: contact?.groupId || "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [groups, setGroups] = useState<Group[]>([]);
+
+  useEffect(() => {
+    setGroups(getGroups());
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -132,6 +138,23 @@ export default function ContactForm({ contact, onClose, onSaved }: Props) {
                 <option value="Lead">Lead</option>
                 <option value="Active">Active</option>
                 <option value="Inactive">Inactive</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="label-text">Group <span className="text-slate-500 font-normal">(Optional)</span></label>
+              <select
+                name="groupId"
+                value={formData.groupId}
+                onChange={handleChange}
+                className="input-field appearance-none bg-slate-800/80"
+              >
+                <option value="">No Group</option>
+                {groups.map((group) => (
+                  <option key={group.id} value={group.id}>
+                    {group.name}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
